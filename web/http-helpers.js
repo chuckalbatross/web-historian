@@ -10,10 +10,40 @@ exports.headers = {
   'Content-Type': 'text/html'
 };
 
+const mimeType = {
+  '.ico': 'image/x-icon',
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.json': 'application/json',
+  '.css': 'text/css',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.wav': 'audio/wav',
+  '.mp3': 'audio/mpeg',
+  '.svg': 'image/svg+xml',
+  '.pdf': 'application/pdf',
+  '.doc': 'application/msword',
+  '.eot': 'appliaction/vnd.ms-fontobject',
+  '.ttf': 'aplication/font-sfnt',
+  '.gif': 'image/gif'
+};
+
 exports.serveAssets = function(res, asset, callback) {
-  // Write some code here that helps serve up your static files!
-  // (Static files are things like html (yours or archived from others...),
-  // css, or anything that doesn't change often.)
+  // 
+  var headers = exports.headers;
+  var statusCode = 200;
+  var ext = path.parse(asset).ext;
+  headers['Content-Type'] = mimeType[ext];
+  res.writeHead(statusCode, headers);
+
+
+  fs.readFile(asset, (err, data) => {
+    if (err) {
+      callback(`Error getting file: ${err}`);
+    } else {
+      callback(data);
+    }
+  });
 };
 
 
