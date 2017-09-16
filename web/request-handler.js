@@ -4,28 +4,26 @@ var fs = require('fs');
 var querystring = require('querystring');
 var httpHelpers = require('./http-helpers');
 
-// require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
 
-  // var callbackTest = (res) => {
-  //   httpHelpers.serveAssets
-  // };
-  // archive.isUrlArchived('www.example.com', res, (stats) => {
-  //   res.end(stats);
-  // });
-
   var fileUrl;
+
+  var urls = ['www.google.com', 'www.walmart.com', 'www.homedepot.com'];
+  archive.downloadUrls(urls);
+
+  // move to http helpers
+  var callbackHelper = function(callbackFile) {
+    httpHelpers.serveAssets(res, callbackFile, res.end(callbackFile));
+  };
 
   if (req.method === 'GET') {
 
     // make fileUrl for root index.html
     if (req.url === '/') {
       fileUrl = archive.paths.siteAssets + '/index.html';
-
     } else {
       fileUrl = archive.paths.siteAssets + req.url;
-
     }
 
     httpHelpers.serveAssets(res, fileUrl, (data) => {
@@ -39,32 +37,16 @@ exports.handleRequest = function (req, res) {
     req.on('data', (data) => {
       body += data;
     });
+
     req.on('end', () => {
       var post = querystring.parse(body);
 
-      
-      // post (www.example.com)
-
-      // archive.isurlthere (post, funciton(boolean) {
-          // if boolean is true
-            // checkArchives(post)
-          // if boolean is false
-            // addtoURL(post)
-      // })
-      // set fileUrl based on post
-        // if post contained in sites.txt
-          // set fileUrl to archived site (index.html)
-      
-      fileUrl = archive.paths.siteAssets + '/loading.html';
-
-      httpHelpers.serveAssets(res, fileUrl, (data) => {
-        res.end(data);
-      });
+      archive.isUrlInList(post, (asset) => {
+        callbackHelper(asset);
+      })   
 
     });
   }
-
-
 };
 
 

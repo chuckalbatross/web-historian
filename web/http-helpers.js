@@ -39,9 +39,12 @@ exports.serveAssets = function(res, asset, callback) {
 
   fs.readFile(asset, (err, data) => {
     if (err) {
-      callback(`Error getting file: ${err}`);
+      console.log(`Error getting file: ${err}`);
+      callback('');
     } else {
-      callback(data);
+      if (typeof callback === 'function') {
+        callback(data);
+      }
     }
   });
 };
